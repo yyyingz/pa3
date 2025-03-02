@@ -1,0 +1,64 @@
+---
+title: "index"
+author: "Ying Zhang"
+date: "2025-03-02"
+output: html_document
+---
+
+---
+title: "index"
+author: "Ying Zhang"
+date: "2025-03-01"
+output: html_document
+---
+
+```{r}
+#| label: load-libs
+#| echo: false
+#| message: false
+library("tidyverse")
+library("ds4ling")
+library("untidydata")
+data(package = "untidydata")
+glimpse(spirantization)
+```
+
+```{r}
+#| label: tidying
+spirantization |> 
+  separate(
+    col = id,
+    into = c ("word", "num"),
+    sep = "_",
+    remove = FALSE
+  ) |> 
+  pivot_wider(
+    names_from = position,
+    values_from = vIntensity
+  )
+```
+
+```{r}
+#| label: calculate
+spirantization |> 
+  group_by(cIntensity) |> 
+  summarise(avg = mean(vIntensity), mn = min(vIntensity), mx = max(vIntensity))
+```
+
+```{r}
+#| label: bivariate_regression
+mod <- lm(formula = vIntensity ~ cIntensity, data = spirantization)
+summary(mod)
+```
+
+```{r}
+#| label: plot
+spirantization |> 
+  ggplot() +
+  aes(x = cIntensity, y = vIntensity) +
+  geom_point() +
+  geom_smooth()
+```
+The low R-square indicates that the model doesn't fit the data and cannot explain much of the variation. 
+
+The p-value is greater than 0.5. It indicates that the effect of cIntensity on vIntensity is not statistically significant. There is no strong evidence that cIntensity predicts vIntensity.
